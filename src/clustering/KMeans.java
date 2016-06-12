@@ -12,19 +12,52 @@ import java.util.Set;
 public class KMeans {
 	
 	//↓フィールド群
-	private int k; //k-meansのk。何個のクラスタに分割するか
-	private double[][] vec;//クラスタリングするベクトル群
-	private double[][] centroid;// k個の重心ベクトル。
-	private int[] cluster; //ベクトル群の所属クラスタを記憶する配列
-	private int max_itr;//最大イテレーション回数。デフォルトは300
-	private boolean rndFlg;//初期値選択アルゴリズムがrandomであればtrue,k-means++であればfalseとなるフラグ
+	/**
+	 * k-meansのk。何個のクラスタに分割するか
+	 */
+	private int k;
+	/**
+	 * クラスタリングするベクトル群
+	 */
+	private double[][] vec;
+	/**
+	 * k個の重心ベクトル。
+	 */
+	private double[][] centroid;
+	/**
+	 * ベクトル群の所属クラスタを記憶する配列
+	 */
+	private int[] cluster; 
+	/**
+	 * 最大イテレーション回数。デフォルトは300
+	 */
+	private int max_itr;
+	/**
+	 * 初期値選択アルゴリズムがrandomであればtrue,k-means++であればfalseとなるフラグ
+	 */
+	private boolean rndFlg;
 
-	private boolean calculated;//k-meansの計算を終わっているかを判定するフラグ
+	/**
+	 * k-meansの計算を終わっているかを判定するフラグ
+	 */
+	private boolean calculated;
 	
 	// 定数フィールド
+	/**
+	 * 初期値選択をランダムにしたい時にコンストラクタに渡す文字列
+	 */
 	public final static String INIT_RND = "random";
+	/**
+	 * 初期値選択をk-means++にしたい時にコンストラクタに渡す文字列
+	 */
 	public final static String INIT_K_MEANSPP = "k-means++";
+	/**
+	 * デフォルトの最大イテレーション回数を記憶する定数フィールド。
+	 */
 	private final static int DEFAULT_MAX_ITR = 300;
+	/**
+	 * デフォルトの初期値選択"k-means++"を記憶する定数フィールド。
+	 */
 	private final static String DEFAULT_INIT_ALGO = INIT_K_MEANSPP;
 
 	
@@ -40,7 +73,6 @@ public class KMeans {
 	 * @throws IllegalArgumentException 不正なパラメータを渡した時にエラーを吐く。
 	 */
 	public KMeans(double[][] vec, int k,int max_itr,String initAlgo){
-		
 		//vecのコピー
 		if(vec.length == 0 || vec == null)
 			throw new IllegalArgumentException("vecが空かnullです");
