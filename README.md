@@ -5,3 +5,4 @@
 
 ### [k-means](clustering/KMeans/README.md)
 ### 階層型クラスタリング
+### ソフトクラスタリング
