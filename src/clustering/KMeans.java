@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * 
  * @author YutaTomomatsu
+ * @version 1.0 Mon June 13th,2016
  * 
  */
 public class KMeans {
@@ -16,59 +16,90 @@ public class KMeans {
 	private double[][] vec;//クラスタリングするベクトル群
 	private double[][] centroid;// k個の重心ベクトル。
 	private int[] cluster; //ベクトル群の所属クラスタを記憶する配列
-	private int max_itr;
-	private boolean rndFlg;
+	private int max_itr;//最大イテレーション回数。デフォルトは300
+	private boolean rndFlg;//初期値選択アルゴリズムがrandomであればtrue,k-means++であればfalseとなるフラグ
 
 	private boolean calculated;//k-meansの計算を終わっているかを判定するフラグ
 	
+	// 定数フィールド
 	public final static String INIT_RND = "random";
 	public final static String INIT_K_MEANSPP = "k-means++";
+	private final static int DEFAULT_MAX_ITR = 300;
+	private final static String DEFAULT_INIT_ALGO = INIT_K_MEANSPP;
 
 	
 	//↓コンストラクタ群
 	/**
-	 * コンストラクタではvecのコピーとkの初期化,フィールドの配列の初期化のみ行う。
+	 * 主要コンストラクタ。どのコンストラクタを呼び出しても最終的にこのコンストラクタを呼び出している。
+	 * コンストラクタではvecのコピーとkのコピー,初期値選択アルゴリズムの選択,フィールドの配列の初期化のみ行う。
 	 * アルゴリズム的な初期化はinit関数内で行う。(初期クラスタの割当て)
-	 * 
 	 * @param vec クラスタリングしたいベクトル群をdoubleの2重配列にいれたもの
-	 * @param k k-meansのk。
+	 * @param k k-meansのk。(1≦k≦vec.length)の範囲で指定。
 	 * @param max_itr オプション。最大イテレーション回数。デフォルトは300
 	 * @param initAlgo オプション。初期値選択アルゴリズム。"k-means++"or"random"で指定。デフォルトは"k-means++"
 	 */
 	public KMeans(double[][] vec, int k,int max_itr,String initAlgo){
-		this.vec = new double[vec.length][vec[0].length];
-		for(int i = 0; i < vec.length; i++){
-			for(int j = 0; j < vec[i].length;j++){
-				this.vec[i][j] = vec[i][j];
-			}
-		}
+		
+		//vecのコピー
+		if(vec.length == 0 || vec == null)
+			throw new IllegalArgumentException("vecが空かnullです");
+		this.vec = vec.clone();
+		
+		//kのコピー
+		if(k < 0 || k > vec.length)
+			throw new IllegalArgumentException("kの値指定が不正です");
 		this.k = k;
 		
-		centroid = new double[k][vec[0].length];
-		calculated = false;// kmeansの計算を行っているかを判定するフラグ
-		cluster = new int[vec.length];//各ベクトルの所属ベクトルを
-		if(max_itr <= 0){
+		//最大イテレーションのコピー
+		if(max_itr <= 0)
 			throw new IllegalArgumentException("最大イテレーションの指定が正しくありません");
-		}
 		this.max_itr = max_itr;
+		
+		//初期値選択アルゴリズムの選択。flgの値を書き換える。
 		if(initAlgo.equals(INIT_RND))
 			rndFlg = true;
 		else if(initAlgo.equals(INIT_K_MEANSPP))
 			rndFlg = false;
 		else
 			throw new IllegalArgumentException("初期値アルゴリズムの指定が正しくありません");
+		
+		//重心ベクトルを扱う変数の初期化。
+		centroid = new double[k][vec[0].length];
+
+		//calcメソッドを呼び出すとtrueになる。kmeansの計算を行っているかを判定するフラグ。
+		calculated = false;
+		
+		//clusteringの結果を格納する配列。
+		cluster = new int[vec.length];
 	}
 	
+	/**
+	 * 選択されていないパラメータはデフォルト値を入れて主要コンストラクタに投げる。
+	 * @param vec クラスタリングしたいベクトル群をdoubleの2重配列にいれたもの
+	 * @param k k-meansのk。(1≦k≦vec.length)の範囲で指定。
+	 */
 	public KMeans(double[][] vec, int k){
-		this(vec,k,300,INIT_K_MEANSPP);
+		this(vec,k,DEFAULT_MAX_ITR,DEFAULT_INIT_ALGO);
 	}
 	
+	/**
+	 * 選択されていないパラメータはデフォルト値を入れて主要コンストラクタに投げる。	 
+	 * @param vec クラスタリングしたいベクトル群をdoubleの2重配列にいれたもの
+	 * @param k k-meansのk。(1≦k≦vec.length)の範囲で指定。
+	 * @param max_itr オプション。最大イテレーション回数。デフォルトは300
+	 */
 	public KMeans(double[][] vec, int k,int max_itr){
-		this(vec,k,max_itr,INIT_K_MEANSPP);
+		this(vec,k,DEFAULT_MAX_ITR,DEFAULT_INIT_ALGO);
 	}
 	
+	/**
+	 * 選択されていないパラメータはデフォルト値を入れて主要コンストラクタに投げる。
+	 * @param vec クラスタリングしたいベクトル群をdoubleの2重配列にいれたもの
+	 * @param k k-meansのk。(1≦k≦vec.length)の範囲で指定。
+	 * @param initAlgo オプション。初期値選択アルゴリズム。"k-means++"or"random"で指定。デフォルトは"k-means++"
+	 */
 	public KMeans(double[][] vec, int k,String initAlgo){
-		this(vec,k,300,initAlgo);
+		this(vec,k,DEFAULT_MAX_ITR,initAlgo);
 	}
 	
 	//publicなインスタンスメソッド
@@ -86,8 +117,7 @@ public class KMeans {
 		int iteration=0;
 		while(true){
 			//あとでクラスタに変化があるか確かめるために計算前の所属クラスタを退避する。
-			int[] clusterPre = new int[vec.length];
-			copyArray(cluster,clusterPre);
+			int[] clusterPre = cluster.clone();
 			
 			
 			//step1 クラスタの重心ベクトルを求める
@@ -104,15 +134,18 @@ public class KMeans {
 				return;
 			}
 			else{
-				continue;
+				continue;//必要ないが、step1に戻ることを明示するために記述。
 			}
 		}
 	}
 	
+	/**
+	 * k-meansのメタ情報を標準出力する。
+	 */
 	public void printKMeansInfo(){
 		System.out.println("手法:k-means");
 		System.out.println("初期値選択アルゴリズム:" + ((rndFlg)?INIT_RND:INIT_K_MEANSPP));
-		System.out.println("最大イテレーション:" + ((max_itr > 0)?max_itr:"収束するまで"));
+		System.out.println("最大イテレーション:" + max_itr);
 		
 	}
 	
@@ -120,12 +153,12 @@ public class KMeans {
 	/**
 	 * k-means計算後の各クラスタの重心ベクトルを返す。
 	 * calc関数実行後に呼び出す。
-	 * @return k-meansによって分けられた各クラスタの重心ベクトル
-	 * @throws Exception calc関数を実行する前にこの関数を呼び出すとエラーを吐く。
+	 * @return k-meansによって分けられた各クラスタの重心ベクトルをdoubleの2次元配列で返す。
+	 * @throws UnsupportedOperationException calcメソッドを呼び出す前にこのメソッドを実行するとエラーを吐く
 	 */
-	public double[][] getCentroid() throws Exception{
+	public double[][] getCentroid(){
 		if(!calculated){
-			throw new Exception("kmeansの計算を行っていません");
+			throw new UnsupportedOperationException("kmeansの計算を行っていません");
 		}
 		return centroid;
 	}
@@ -133,12 +166,12 @@ public class KMeans {
 	/**
 	 * k-means計算後の各ベクトルの所属クラスタを返す。
 	 * calc関数実行後に呼び出す。
-	 * @return
-	 * @throws Exception calc関数を実行する前に関数を呼び出すとエラーを吐く。
+	 * @return 各ベクトルの所属クラスタをintの1次元配列で返す。
+	 * @throws UnsupportedOperationException calcメソッドを呼び出す前にこのメソッドを実行するとエラーを吐く
 	 */
-	public int[] getCluster() throws Exception{
+	public int[] getCluster(){
 		if(!calculated){
-			throw new Exception("kmeansの計算を行っていません。");
+			throw new UnsupportedOperationException("kmeansの計算を行っていません。");
 		}
 		return cluster;
 	}
@@ -148,6 +181,12 @@ public class KMeans {
 	//以下privateメソッド群。
 	//クラス内からしか参照できない関数。
 	
+	
+	/**
+	 * 初期値選択をrndFlgにもとづいて実行する。
+	 * rndFlg = trueならばRandomに初期値を選ぶ。
+	 * rndFlg = falseならばk-means++で初期値を選ぶ。
+	 */
 	private void init(){
 		if(rndFlg)
 			initRandom();
@@ -156,10 +195,9 @@ public class KMeans {
 	}
 	
 	
-	/**最初に所属するクラスタをランダムで割り当てる。
-	 * 
+	/** 
+	 * ランダム割り当てによって初期値選択を行う。
 	 */
-	
 	private void initRandom(){
 		Random rnd = new Random();
 		for(int i = 0; i < cluster.length; i++){
@@ -167,7 +205,9 @@ public class KMeans {
 		}
 	}
 	
-	
+	/**
+	 * k-means++法にて初期値選択を行う。
+	 */
 	private void initKMeansPP(){
 		Random rnd = new Random();
 		Set<Integer> set = new HashSet<>();
@@ -215,39 +255,44 @@ public class KMeans {
 		calcBelongCluster();
 	}
 	
+	
+	
+	
 	/** 
-	 *
 	 * 各ベクトルから最も近い重心ベクトルを計算し、新たな所属クラスタとする。
 	 */
 	private void calcBelongCluster(){
 		for(int i = 0; i < cluster.length; i++){
-			double max_sim = Integer.MAX_VALUE;
-			int max_c = -1;
+			double minSim = Integer.MAX_VALUE;
+			int maxC = -1;
 			for(int j = 0; j < k; j++){
 				double sim = distance(centroid[j],vec[i]);
-				if(sim < max_sim){
-					max_sim = sim;
-					max_c = j;
+				if(minSim > sim){
+					minSim = sim;
+					maxC = j;
 				}
 			}
-			cluster[i] = max_c;
+			cluster[i] = maxC;
 		}
 	}
 	
 	/**
-	 * 重心を計算する
-	 * 
+	 * 各クラスタに所属するベクトルの重心を計算して代表ベクトルとする。
 	 */
 	private void calcCentroid(){
-		double[][] newCentroid = new double[k][vec[0].length];
-		int[] count = new int[k];
+		double[][] newCentroid = new double[k][vec[0].length];//新たな代表ベクトルの値を一時的に対比しておく配列
+		int[] count = new int[k];//各クラスタにいくつのベクトルが割り当てられているか計算する
+
+		/*各クラスタに属するベクトルの和を求める*/
 		for(int i = 0; i < vec.length; i++){
-			int c = cluster[i];
-			count[c]++;
+			int clusterId = cluster[i];//i番目のベクトルのクラスタidを取り出す
+			count[clusterId]++;
 			for(int j = 0 ; j < vec[i].length; j++){
-				newCentroid[c][j] += vec[i][j];
+				newCentroid[clusterId][j] += vec[i][j];
 			}
 		}
+		
+		//各クラスタのベクトル和をベクトルの数で割り、重心を取る。
 		for(int i = 0; i < centroid.length; i++){
 			for(int j = 0; j < centroid[i].length; j++){
 				centroid[i][j] = newCentroid[i][j]/count[i];
@@ -255,28 +300,29 @@ public class KMeans {
 		}
 	}
 	
-	//aとbが同じベクトルかを計算する
+	/**
+	 * aとbが同じ値を持つ配列かどうかを返す
+	 * @param a int型の配列
+	 * @param b int型の配列
+	 * @return aとbが同じ値を持つ配列ならtrue,そうでなけらばelseを返す
+	 */
 	private boolean isSameArray(int[] a,int[] b){
+		if(a.length!=b.length)
+			return false;
 		for(int i = 0; i < a.length; i++)
 			if(b[i] != a[i])
 				return false;
 		return true;
 	}
 	
-	//配列aをbにコピーする。
-	private void copyArray(int[] a, int[] b){
-		for(int i = 0; i < a.length; i++){
-			b[i] = a[i];	
-		}
-	}
+
 	
 	/**
-	 * ベクトルp,qの類似度を計算して返す関数。
-	 * @param p
-	 * @param q
-	 * @return
+	 * ベクトルp,qのユークリッド距離を計算して返す関数。
+	 * @param p doubleのベクトル
+	 * @param q doubleのベクトル
+	 * @return ベクトルpとベクトルqの距離
 	 */
-	
 	private double distance(double[]p, double[] q){
 		double distance = 0;
 		for(int i = 0; i < p.length; i++){
