@@ -4,6 +4,7 @@
 * [javadoc](https://htmlpreview.github.io/?https://raw.githubusercontent.com/otamot/MachineLearning/master/doc/clustering/package-summary.html)
 
 
+
 |手法|階層型or非階層型|ハードorソフト|
 |:-|:-|:-|
 |単連結法|階層型|ハード|
@@ -19,6 +20,8 @@
 |混合分布モデル|非階層型|ソフト|
 |pLSI|非階層型|ソフト|
 |NMF|非階層型|ソフト|
+
+
 
 ### 階層型 or 非階層型
 #### 階層型クラスタリング
