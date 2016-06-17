@@ -58,28 +58,28 @@ public class KMeansMain {
 		//////////////////////////////////////////////////////////////////
 		
 		double vec2[][] = {{0,0},{0,1},{1,0},{1,1},{9,0},{9,1},{10,0},{10,1}}; 
-		kmeans = new KMeans(vec2,2,KMeans.INIT_RND);
-		kmeans.calc();	
-		cluster = kmeans.getCluster();;
-		centroid = kmeans.getCentroid();
+		KMeans kmeans2 = new KMeans(vec2,2,KMeans.INIT_RND);
+		kmeans2.calc();	
+		int[] cluster2 = kmeans2.getCluster();;
+		double[][] centroid2 = kmeans2.getCentroid();
 		
 		System.out.println("\n\n\n\n");
 		System.out.println("k-meansの情報");
-		kmeans.printKMeansInfo();
+		kmeans2.printKMeansInfo();
 		System.out.println("\nクラスタid:ベクトルの要素");
-		printArray(cluster,vec);
+		printArray(cluster2,vec2);
 		System.out.println("\n重心ベクトル");
-		printArray(centroid);
+		printArray(centroid2);
 		
 	}
 	
 	
 	
-	public static void printArray(int[] a,double[][] vec){
+	public static void printArray(int[] a,double[][] vector){
 		for(int i = 0; i < a.length; i++){
 			System.out.printf("%3d:", a[i]);
-			for(int j = 0; j < vec[i].length;j++){
-				System.out.printf("%6.1f", vec[i][j]);
+			for(int j = 0; j < vector[i].length;j++){
+				System.out.printf("%6.1f", vector[i][j]);
 			}
 			System.out.println();
 		}

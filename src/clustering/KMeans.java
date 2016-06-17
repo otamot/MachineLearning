@@ -1,6 +1,8 @@
 package clustering;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -33,9 +35,9 @@ public class KMeans {
 	 */
 	private int max_itr;
 	/**
-	 * 初期値選択アルゴリズムがrandomであればtrue,k-means++であればfalseとなるフラグ
+	 * 初期値選択アルゴリズムがrandomであれば0,kkzであれば1,k-means++であれば2となるフラグ
 	 */
-	private boolean rndFlg;
+	private int initFlg;
 
 	/**
 	 * k-meansの計算を終わっているかを判定するフラグ
@@ -47,6 +49,10 @@ public class KMeans {
 	 * 初期値選択をランダムにしたい時にコンストラクタに渡す文字列
 	 */
 	public final static String INIT_RND = "random";
+	/**
+	 * 初期値選択をKKZにしたい時にコンストラクタに渡す文字列
+	 */
+	public final static String INIT_KKZ = "kkz";
 	/**
 	 * 初期値選択をk-means++にしたい時にコンストラクタに渡す文字列
 	 */
@@ -90,9 +96,11 @@ public class KMeans {
 		
 		//初期値選択アルゴリズムの選択。flgの値を書き換える。
 		if(initAlgo.equals(INIT_RND))
-			rndFlg = true;
+			initFlg = 0;
+		else if(initAlgo.equals(INIT_KKZ))
+			initFlg = 1;
 		else if(initAlgo.equals(INIT_K_MEANSPP))
-			rndFlg = false;
+			initFlg = 2;
 		else
 			throw new IllegalArgumentException("初期値アルゴリズムの指定が正しくありません");
 		
@@ -176,8 +184,8 @@ public class KMeans {
 	 * k-meansのメタ情報を標準出力する。
 	 */
 	public void printKMeansInfo(){
-		System.out.println("手法:k-means");
-		System.out.println("初期値選択アルゴリズム:" + ((rndFlg)?INIT_RND:INIT_K_MEANSPP));
+		System.out.println("手法:k-means");		
+		System.out.println("初期値選択アルゴリズム:" + ((initFlg==0)?INIT_RND:(initFlg==1)?INIT_KKZ:INIT_K_MEANSPP));
 		System.out.println("最大イテレーション:" + max_itr);
 		
 	}
@@ -217,13 +225,16 @@ public class KMeans {
 	
 	/**
 	 * 初期値選択をrndFlgにもとづいて実行する。
-	 * rndFlg = trueならばRandomに初期値を選ぶ。
-	 * rndFlg = falseならばk-means++で初期値を選ぶ。
+	 * rndFlg == 0ならばRandomに初期値を選ぶ。
+	 * rndFlg == 1ならばkkzで初期値を選ぶ。
+	 * rndFlg == 2ならばk-means++で初期値を選ぶ。
 	 */
 	private void init(){
-		if(rndFlg)
+		if(initFlg==0)
 			initRandom();
-		else
+		else if(initFlg==1)
+			initKKZ();
+		else if(initFlg == 2)
 			initKMeansPP();
 	}
 	
@@ -239,30 +250,39 @@ public class KMeans {
 	}
 	
 	/**
-	 * k-means++法にて初期値選択を行う。
+	 * KKZ法にて初期値選択を行う。
+	 * Step0:ランダムに1つベクトルを選び代表ベクトルとする
+	 * Step1:代表ベクトルの数がk個になったら終了
+	 * Step2:それぞれのベクトル𝑥に関して、最も近い代表ベクトルの距離を求める。
+	 * Step3:Step2で求めた距離が最大になるベクトルを新たな代表ベクトルとして選択。Step1へ
 	 */
-	private void initKMeansPP(){
+	private void initKKZ(){
 		Random rnd = new Random();
-		Set<Integer> set = new HashSet<>();
+		Set<Integer> nonSelectedVecSet = new HashSet<>();
 		Set<Integer> centroidSet = new HashSet<>();
+		
+		//最初は代表ベクトルとして何も選ばれていないので,0からベクトルの数をsetに追加
 		for(int i = 0; i < cluster.length; i++){
-			set.add(i);
+			nonSelectedVecSet.add(i);//
 		}
 
+		//Step0:ランダムに1つベクトルを選び代表ベクトルとする
 		int clusterId = rnd.nextInt(cluster.length);
-		set.remove(clusterId);
-		centroidSet.add(clusterId);
+		centroidSet.add(clusterId);//選ばれたベクトルを代表ベクトルSetに追加
+		nonSelectedVecSet.remove(clusterId);//選ばれたベクトルを選ばれてないSetから除外
 		
+		//Step1:代表ベクトルの数がk個になったら終了
 		for(int i = 1;i < k; i++){
 
-			double max_dis = -1;
-			int max_index = -1;
-			for(int j:set){
+			double max_dis = -1;//各ベクトルの中で一番近い代表ベクトルの距離が最大となる距離を記憶する変数
+			int max_index = -1;//各ベクトルの中で一番近い代表ベクトルの距離が最大となるベクトルのインデックスを記憶する変数
+			for(int j:nonSelectedVecSet){
 				
-				double min_dis = 10000;
-				int min_index = -1;
+				double min_dis = 10000;//注目しているベクトルjから一番近い代表ベクトルまでの距離を記憶する変数
+				int min_index = -1;//注目しているベクトルjから一番近い代表ベクトルのインデックスを記憶する変数
 				
 				for(int cent:centroidSet){
+					//Step2:それぞれのベクトル𝑥に関して、最も近い代表ベクトルの距離を求める。
 					double dis = distance(vec[j],vec[cent]);
 					if(min_dis > dis){
 						min_dis = dis;
@@ -273,12 +293,13 @@ public class KMeans {
 					max_index = min_index;
 					max_dis = min_dis;
 				}
-				
 			}
+			//Step3:Step2で求めた距離が最大になるベクトルを新たな代表ベクトルとして選択。Step1へ
 			centroidSet.add(max_index);
-			set.remove(max_index);
+			nonSelectedVecSet.remove(max_index);
 		}
 		int i = 0;
+		//選んだ代表ベクトルをフィールドのcentroid変数にコピー
 		for(int cent: centroidSet){
 			for(int j = 0; j < centroid[i].length; j++){
 				centroid[i][j] = vec[cent][j];
@@ -286,6 +307,83 @@ public class KMeans {
 			i++;
 		}
 		calcBelongCluster();
+	}
+	
+	/**
+	 * k-means++法にて初期値選択を行う。
+	 * Step0:ランダムに1つベクトルを選び代表ベクトルとする
+	 * Step1:代表ベクトルの数がk個になったら終了
+	 * Step2:それぞれのベクトル𝑥に関して、そのベクトルに一番近い代表ベクトルとの距離𝐷(𝑋)を求める。
+	 * Step3:各ベクトルxに関して重み付き確率分布𝜙(x_𝑖)=𝐷(x_𝑖)/∑_𝑘𝐷(𝑥_𝑘)を用いて新たな代表ベクトルをランダムに選ぶ。Step1へ
+	 */
+	private void initKMeansPP(){
+		Random rnd = new Random();
+		Set<Integer> nonSelectedVecSet = new HashSet<>();
+		Set<Integer> centroidSet = new HashSet<>();
+		
+		//最初は代表ベクトルとして何も選ばれていないので,0からベクトルの数をsetに追加
+		for(int i = 0; i < cluster.length; i++){
+			nonSelectedVecSet.add(i);//
+		}
+
+		//Step0:ランダムに1つベクトルを選び代表ベクトルとする
+		int clusterId = rnd.nextInt(cluster.length);
+		centroidSet.add(clusterId);//選ばれたベクトルを代表ベクトルSetに追加
+		nonSelectedVecSet.remove(clusterId);//選ばれたベクトルを選ばれてないSetから除外
+		
+		//Step1:代表ベクトルの数がk個になったら終了
+		for(int i = 1;i < k; i++){
+			double sumXk = 0;
+			Map<Integer,Double> distMap = new HashMap<>();
+			for(int j:nonSelectedVecSet){
+				
+				double min_dis = 10000;//注目しているベクトルjから一番近い代表ベクトルまでの距離を記憶する変数
+				int min_index = -1;//注目しているベクトルjから一番近い代表ベクトルのインデックスを記憶する変数
+				
+				for(int cent:centroidSet){
+					//Step2:それぞれのベクトル𝑥に関して、最も近い代表ベクトルの距離を求める。
+					double dis = distance(vec[j],vec[cent]);
+					if(min_dis > dis){
+						min_dis = dis;
+						min_index = j;
+					}
+				}
+				sumXk += min_dis;
+				distMap.put(min_index, min_dis);
+			}
+			//Step3:各ベクトルxに関して重み付き確率分布𝜙(x_𝑖)=𝐷(x_𝑖)/∑_𝑘𝐷(𝑥_𝑘)を用いて新たな代表ベクトルをランダムに選ぶ。Step1へ
+			int selectedVecIndex = selectVec(distMap,sumXk);
+			centroidSet.add(selectedVecIndex);
+			nonSelectedVecSet.remove(selectedVecIndex);
+		}
+		int i = 0;
+		//選んだ代表ベクトルをフィールドのcentroid変数にコピー
+		for(int cent: centroidSet){
+			for(int j = 0; j < centroid[i].length; j++){
+				centroid[i][j] = vec[cent][j];
+			}
+			i++;
+		}
+		calcBelongCluster();
+	}
+	
+	/**
+	 * k-means++のstep3で呼び出されるメソッド。
+	 * @param distMap 各ベクトルのインデックスをkeyとして、そのベクトルから一番近い代表ベクトルまでの距離がvalueとして格納
+	 * @param sumXk distMapのvalueの和。
+	 * @return 確率的に選ばれたベクトルのインデックス
+	 */
+	private int selectVec(Map<Integer,Double> distMap, Double sumXk){
+		Random rnd = new Random();
+		double randomValue = rnd.nextDouble()*sumXk;
+		
+		double nowSum = 0;
+		for(int index:distMap.keySet()){
+			nowSum += distMap.get(index);
+			if(randomValue < nowSum)
+				return index;
+		}
+		return -1;
 	}
 	
 	
