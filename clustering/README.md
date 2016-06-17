@@ -12,7 +12,7 @@
 |ウォード法|階層型|ハード|
 |重心法|階層型|ハード|
 |メディアン法|階層型|ハード|
-|[k-means](clustering/KMeans/README.md)|非階層型|ハード|
+|[k-means](KMeans/README.md)|非階層型|ハード|
 |x-means|非階層型|ハード|
 |スペクトラルクラスタリング|非階層型|ハード|
 |Fuzzy c-means|非階層型|ソフト|
