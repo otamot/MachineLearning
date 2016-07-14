@@ -2,6 +2,7 @@ package clustering;
 
 public class KMeansMain {
 	public static void main(String[] args){
+		/*
 		double[][] vec = {
 				{  80,  85, 100 },
 				{  96, 100, 100 },
@@ -54,11 +55,11 @@ public class KMeansMain {
 		System.out.println("\n重心ベクトル");
 		printArray(centroid);
 		
-		
+		*/
 		//////////////////////////////////////////////////////////////////
 		
 		double vec2[][] = {{0,0},{0,1},{1,0},{1,1},{9,0},{9,1},{10,0},{10,1}}; 
-		KMeans kmeans2 = new KMeans(vec2,2,KMeans.INIT_RND);
+		KMeans kmeans2 = new KMeans(vec2,2,KMeans.INIT_K_MEANSPP);
 		kmeans2.calc();	
 		int[] cluster2 = kmeans2.getCluster();;
 		double[][] centroid2 = kmeans2.getCentroid();

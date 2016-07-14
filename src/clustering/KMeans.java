@@ -75,7 +75,7 @@ public class KMeans {
 	 * @param vec クラスタリングしたいベクトル群をdoubleの2重配列にいれたもの
 	 * @param k k-meansのk。(1≦k≦vec.length)の範囲で指定。
 	 * @param max_itr オプション。最大イテレーション回数。デフォルトは300
-	 * @param initAlgo オプション。初期値選択アルゴリズム。"k-means++"or"random"で指定。デフォルトは"k-means++"
+	 * @param initAlgo オプション。初期値選択アルゴリズム。"k-means++" or "kkz" or "random"で指定。デフォルトは"k-means++"
 	 * @throws IllegalArgumentException 不正なパラメータを渡した時にエラーを吐く。
 	 */
 	public KMeans(double[][] vec, int k,int max_itr,String initAlgo){
