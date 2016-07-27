@@ -9,7 +9,8 @@
 ### [Clustering](./clustering)
 
 ##教師あり学習
-### 回帰分析
+### [回帰分析](./regression)
+### [分類](./classification)
 
 
 ## 統計
