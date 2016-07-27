@@ -3,21 +3,23 @@ package statisticalHypothesisTesting;
 public class ChiSquaredTest {
 	//フィールド宣言
 	/**
-	 * 確率値を保持する変数
+	 * 期待確率値を保持する変数
 	 */
 	private double[] probability;
 	/**
-	 * 観測値を保持する変数
+	 * 観測度数を保持する変数
 	 */
 	private int[] observed;
 	/**
-	 * 上側
+	 * 有意水準5%時の上側有意点
+	 * upperLevelOfSignificance[i]で自由度(i+1)の上側パーセント点を得られる。
 	 */
 	private static double upperLevelOfSignificance[] = {3.84,5.99,7.81,9.49,11.07,12.6,14.1,15.5,16.9,18.3, 
 												19.7,21,22.4,23.7,25,26.3,27.6,28.9,30.1,31.4,
 												32.7,33.9,35.2,36.4,37.7,38.9,40.1,41.3,42.6,43.8};
 	/**
-	 * 下側
+	 * 有意水準5%時の下側有意点
+	 * lowerLevelOfSignificance[i]で自由度(i+1)の下側パーセント点を得られる。
 	 */
 	private static double lowerLevelOfSignificance[] =	{0.0039,0.1026,0.352,0.711,1.15,1.64,2.17,2.73,3.33,3.94,
 												4.57,5.23,5.89,6.57,7.26,7.96,8.67,9.39,10.1,10.9,
@@ -79,28 +81,27 @@ public class ChiSquaredTest {
 	public void printTesting(){
 		System.out.println("--------カイ2乗検定--------");
 		System.out.println("自由度\t:" + degreeOfFreedom);
-		System.out.println("有意確率α\t:" + alpha);
-		System.out.print("観測値\t:[");
-		for(int i = 0; i < observed.length; i++){
-			if(i != 0)
-				System.out.print(",");
-			System.out.printf("%5d",observed[i]);
-		}
-		System.out.println("]");
-		
+		System.out.println("有意確率α\t:" + alpha);		
 		System.out.print("期待確率\t:[");
 		for(int i = 0; i < probability.length; i++){
 			if(i != 0)
 				System.out.print(",");
-			System.out.printf("%.3f",probability[i]);
+			System.out.printf(" %.5f",probability[i]);
 		}
 		System.out.println("]");
 		
-		System.out.print("期待値\t:[");
+		System.out.print("期待度数\t:[");
 		for(int i = 0; i < expectedValue.length; i++){
 			if(i != 0)
 				System.out.print(",");
-			System.out.printf("%5.1f",expectedValue[i]);
+			System.out.printf(" %7.1f",expectedValue[i]);
+		}
+		System.out.println("]");
+		System.out.print("観測度数\t:[");
+		for(int i = 0; i < observed.length; i++){
+			if(i != 0)
+				System.out.print(",");
+			System.out.printf(" %5d.0",observed[i]);
 		}
 		System.out.println("]");
 		
@@ -117,11 +118,6 @@ public class ChiSquaredTest {
 		System.out.println("-------------------------");
 	}
 	
-	
-	
-	
-	
-	
 	/**
 	 * 期待度数を計算する
 	 */
@@ -135,5 +131,5 @@ public class ChiSquaredTest {
 			expectedValue[i] = probability[i]*sumObserved;
 		}
 	}
-
+	
 }
