@@ -7,11 +7,13 @@ import lib.Matrix;
 
 /**
  * パーセプトロンによる分類を行う
- * @author otamot
+ * @author YutaTomomatsu
  * @since 2016/07/27
  * @version 1.0
  */
 public class Perceptron {
+	//↓フィールド群
+	//内部のデータ構造は全てカプセル化されていて外部から変更されることはない。
 	/**
 	 * データ群の特徴量を保持するMatrix型の変数
 	 */
@@ -25,6 +27,7 @@ public class Perceptron {
 	 */
 	private Matrix w;
 
+	//↓コンストラクタ
 	/**
 	 * コンストラクタ
 	 * @param x 特徴量
@@ -36,33 +39,7 @@ public class Perceptron {
 		this.w = new Matrix(this.x.col_n()+1,1);
 	}
 
-
-
-	/**
-	 * 基底関数。
-	 * Φ(x) = ΣΦ(xi)= 1 + x1 + x2 +...+ xn
-	 * となるような基底関数。
-	 * @param x_i
-	 * @return
-	 */
-	private Matrix phi(double[] x_i){
-		double[][] phi = new double[1][x_i.length+1];
-		for(int i = 0; i < x_i.length; i++)
-			phi[0][i] = x_i[i];
-		phi[0][phi[0].length-1] = 1.0;		
-		return new Matrix(phi);
-	}
-
-
-	/**
-	 * xが正なら1,0なら0,負なら-1を返す関数
-	 * @param x 引数
-	 * @return 符号に対応したint値
-	 */
-	private int sign(double x){
-		return (x>0)?1:(x==0)?0:-1;
-	}
-	
+	//↓学習を行うメソッド
 	/**
 	 * パーセプトロンの学習を行う。
 	 */
@@ -97,9 +74,12 @@ public class Perceptron {
 		}
 	}
 	
+	//汎化を行うためのメソッド群
+	//calメソッドを呼び出したあとに実行しないと正しい挙動をしない。
 	/**
 	 * 新しいデータに般化させる
 	 * 新しい特徴量を入れた時のそのデータが正解に分類されたら1,不正解に分類されたら-1を返す。
+	 * calメソッド実行後に呼び出す。
 	 * @param feature 特徴量
 	 * @return 分類されたラベル
 	 */
@@ -109,10 +89,40 @@ public class Perceptron {
 	
 	/**
 	 * パーセプトロンによって求めた重みwをdoubleの1次元配列にて返す。
+	 * calメソッド実行後に呼び出す。
 	 * @return 重みwの1次元配列
 	 */
 	public double[] getWeight(){
 		return (w.t()).getRow(0).toArray()[0];
 	}
+	
+
+	//↓privateメソッド群
+	/**
+	 * 基底関数。
+	 * Φ(x) = ΣΦ(xi)= 1 + x1 + x2 +...+ xn
+	 * となるような基底関数。
+	 * @param x_i
+	 * @return
+	 */
+	private Matrix phi(double[] x_i){
+		double[][] phi = new double[1][x_i.length+1];
+		for(int i = 0; i < x_i.length; i++)
+			phi[0][i] = x_i[i];
+		phi[0][phi[0].length-1] = 1.0;		
+		return new Matrix(phi);
+	}
+
+
+	/**
+	 * xが正なら1,0なら0,負なら-1を返す関数
+	 * @param x 引数
+	 * @return 符号に対応したint値
+	 */
+	private int sign(double x){
+		return (x>0)?1:(x==0)?0:-1;
+	}
+	
+
 }
 
