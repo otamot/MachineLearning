@@ -1,3 +1,15 @@
+# 4. 機械学習演算用ライブラリ
+* 機械学習の計算時に必要と思われる計算をライブラリ化した。
+
+## 4.1 Matrix.Javadoc
+* 行列演算に関わるデータ構造,計算をライブラリ化したもの
+
+### Javadoc
+[コチラ](https://htmlpreview.github.io/?https://raw.githubusercontent.com/otamot/MachineLearning/master/doc/lib/Matrix.html)
+
+### ソースコード
+
+```Java
 package lib;
 
 /**
@@ -22,7 +34,7 @@ public class Matrix {
 	 */
 	private int colLen;
 
-	
+
 	///////////getter群////////////////
 	/**
 	 * Matrixのi行目,j列目の要素を取り出す
@@ -32,7 +44,7 @@ public class Matrix {
 	 */
 	public double getCell(int i,int j){
 		return element[i][j];
-	}	
+	}
 	/**
 	 * Matrixの行数を返す
 	 * @return Matrixの行数
@@ -47,7 +59,7 @@ public class Matrix {
 	public int col_n(){
 		return colLen;
 	}
-	
+
 	/**
 	 * Matrix型から2次元配列への変換
 	 * @return Matrixから変換した2次元配列
@@ -55,7 +67,7 @@ public class Matrix {
 	public double[][] toArray(){
 		return element.clone();
 	}
-	
+
 	/**
 	 * 指定した行Matrixを抜き出す。
 	 * @param row_i 抜き出したい行番号
@@ -66,7 +78,7 @@ public class Matrix {
 		r[0] = element[row_i].clone();
 		return new Matrix(r);
 	}
-	
+
 	/**
 	 * 指定した列Matrixを抜き出す。
 	 * @param col_j 抜き出したい列番号
@@ -78,7 +90,7 @@ public class Matrix {
 		return new Matrix(c).t();
 	}
 
-	
+
 	////////////コンストラクタ群////////////////
 	/**
 	 * コンストラクタ。
@@ -113,7 +125,7 @@ public class Matrix {
 		}
 		return new Matrix(m);
 	}
-	
+
 	//////////出力部/////////////
 	/**
 	 * 行列の中身を標準出力する。
@@ -127,7 +139,7 @@ public class Matrix {
 		}
 	}
 
-	
+
 	//////////////以下全て計算部////////////////
 
 	//////////////和差積////////////////
@@ -155,7 +167,7 @@ public class Matrix {
 		return this.add(b.scalar(-1));
 	}
 
-	
+
 	/**
 	 * 行列を定数倍する
 	 * @param x 定数
@@ -259,12 +271,12 @@ public class Matrix {
 		}
 		return new Matrix(m_ans);
 	}
-	
+
 	/**
 	 * pivotは、消去演算を行う前に、対象となる行を基準とし、それ以降の
 	 * 行の中から枢軸要素の絶対値が最大となる行を見つけ出し、対象の行と
 	 * その行とを入れ替えることを行う関数である。
-	 * @param k 
+	 * @param k
 	 * @param a
 	 * @param N
 	 */
@@ -319,3 +331,7 @@ public class Matrix {
 		}
 	}
 }
+
+
+
+```
