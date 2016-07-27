@@ -1,5 +1,13 @@
-package linearRegression;
+# 単回帰
 
+## Javadoc
+[コチラ](https://htmlpreview.github.io/?https://raw.githubusercontent.com/otamot/MachineLearning/master/doc/linearRegression/SimpleLinearRegression.html)
+
+## ソースコード
+### [SimpleLinearRegression.Java](https://github.com/otamot/MachineLearning/blob/master/src/linearRegression/SimpleLinearRegression.java)
+
+```java
+package linearRegression;
 /**
  * 単回帰を行う
  * @author YutaTomomatsu
@@ -14,7 +22,7 @@ public class SimpleLinearRegression {
 	private double[] x;
 	/**
 	 * y 目的(従属)変数の観測点
-	 */ 
+	 */
 	private double[] y;
 	/**
 	 * 重みb0
@@ -28,9 +36,9 @@ public class SimpleLinearRegression {
 	 * learnメソッドを実行したかどうかを保持する変数
 	 */
 	private boolean learnFlg;
-	
+
 	/**
-	 * 
+	 *
 	 * @param x 説明(独立)変数の観測点
 	 * @param y 目的(従属)変数の観測点
 	 */
@@ -43,7 +51,7 @@ public class SimpleLinearRegression {
 		b1=0;
 		learnFlg = false;
 	}
-	
+
 	/**
 	 * 単回帰を行う。
 	 */
@@ -52,8 +60,8 @@ public class SimpleLinearRegression {
 		b0 = average(y) - (b1*average(x));
 		learnFlg = true;
 	}
-	
-	
+
+
 	/**
 	 * 回帰を行って求めた重みを標準出力する
 	 */
@@ -64,8 +72,8 @@ public class SimpleLinearRegression {
 			throw new UnsupportedOperationException("learnメソッドを実行してからprintメソッドの呼び出しを行ってください。");
 		}
 	}
-	
-	/** 
+
+	/**
 	 * aの平均を求める
 	 * @param a doubleの1次元配列
 	 * @return aの平均値
@@ -76,7 +84,7 @@ public class SimpleLinearRegression {
 			ave_a+=a_i;
 		return ave_a/=a.length;
 	}
-	
+
 	/**
 	 * aの分散を求める
 	 * @param a doubleの1次元配列
@@ -89,8 +97,8 @@ public class SimpleLinearRegression {
 			var_a += Math.pow((a[i] - ave_a),2);
 		return var_a/=a.length;
 	}
-	
-	
+
+
 	/**
 	 * aとbの共分散を求める。
 	 * @param a doubleの1次元配列
@@ -106,3 +114,24 @@ public class SimpleLinearRegression {
 		return cov_ab /= a.length;
 	}
 }
+
+```
+
+### [SimpleLinearRegressionMain](https://github.com/otamot/MachineLearning/blob/master/src/linearRegression/SimpleLinearRegressionMain.java)
+
+```java
+package linearRegression;
+
+public class SimpleLinearRegressionMain {
+
+	public static void main(String[] args){
+		double[] x = {100,200,300,400,500,600,700};
+		double[] y = {40,50,50,70,65,65,80};
+
+		SimpleLinearRegression slr = new SimpleLinearRegression(x, y);
+		slr.learn();
+		slr.print();
+	}
+
+}
+```

@@ -1,8 +1,11 @@
 # Clustering
-* [javadoc](https://htmlpreview.github.io/?https://raw.githubusercontent.com/otamot/MachineLearning/master/doc/clustering/package-summary.html)
+* [資料](http://www.slideshare.net/tomo_otamot/kmeansk)
+
+## Javadoc
+[コチラ](https://htmlpreview.github.io/?https://raw.githubusercontent.com/otamot/MachineLearning/master/doc/clustering/package-summary.html)
 
 
-
+## 手法一覧
 
 |手法|階層型or非階層型|ハードorソフト|
 |:---|:------------|:-----------|

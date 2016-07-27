@@ -1,7 +1,7 @@
 package lib;
 
 /**
- * @author otamot
+ * @author YutaTomomtasu
  * @version 1.0
  * @since 2016/07/20
  * 行列演算をまとめたライブラリ

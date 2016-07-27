@@ -2,7 +2,7 @@ package statisticalHypothesisTesting;
 
 import java.util.Random;
 
-public class ChiSquaeredTestMain {
+public class ChiSquaredTestMain {
 	public static void main(String[] args){
 		//テストケース①
 		/*
