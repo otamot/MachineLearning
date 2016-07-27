@@ -1,6 +1,6 @@
 # ロジスティック回帰
 ## Javadoc
-[コチラ]()
+[コチラ](https://htmlpreview.github.io/?https://raw.githubusercontent.com/otamot/MachineLearning/master/doc/classification/LogisticRegression.html)
 
 ## ソースコード
 ### [LogisticRegression.java](https://github.com/otamot/MachineLearning/blob/master/src/classification/LogisticRegression.java)
